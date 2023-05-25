@@ -33,11 +33,26 @@
 - storetype for each store `Buy or Sell`
 - npcs for each store `true, false`
 - blips for each store `true, false`
-- show category for each store `tools, food, misc` server ownePreviewr decides.
+- show category for each store `tools, food, misc` server owner decides.
 - sell items for `gold or cash`
 - buy items for `gold or cash`
 - items with category + description
 - isolated function calls so you can have more than one store.
+
+## To Do List to Mod to a Player Based, AI store.
+- [X] Read categories from the items database.
+- [ ] Create Stores with admin perms
+- [ ] Delete Stores with admin perms
+- [X] Instal SQL Tables
+- [ ] Write stock to database
+- [X] Read stock from database
+- [X] Read stores from database
+- [X] Read items from database
+- [ ] Update stock in database
+- [ ] Reload data with admin perms
+- [O] Create start stock set for new installs.
+- [ ] Create start stock set for new stores.
+
 
 ## Preview
 

@@ -1,0 +1,5 @@
+RegisterNetEvent(Config.ScriptName..":catch:RefreshStoreLocations")
+AddEventHandler(Config.ScriptName..":catch:RefreshStoreLocations", function(StoresData) 
+	print(Config.ScriptName..":catch:RefreshStoreLocations")  
+	Config.Stores = StoresData	
+end)  

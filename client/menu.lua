@@ -40,8 +40,7 @@ function OpenSubMenu(storeId, category)
     isInMenu = true
     local elements = {}
 
-    for k, v in pairs(Config.Stores[storeId].storeType) do
-         
+    for k, v in pairs(Config.Stores[storeId].storeType) do         
         elements[#elements + 1] = {
             label = v,
             value = v,
@@ -61,13 +60,11 @@ function OpenSubMenu(storeId, category)
             _G[data.trigger](storeId, category)
         end
 
-        if (data.current.value == "Sell") then --translate here same as the config
-             
+        if (data.current.value == "Sell") then --translate here same as the config             
             OpenSellMenu(storeId, category)
         end
 
-        if (data.current.value == "Buy") then --translate here same as the config
-             
+        if (data.current.value == "Buy") then --translate here same as the config             
             OpenBuyMenu(storeId, category)
         end
 
@@ -88,13 +85,12 @@ function OpenSellMenu(storeId, category)
     local player = PlayerPedId()
     local storeConfig = Config.Stores[storeId]
     local elementIndex = 1
-    TriggerServerEvent(GetCurrentResourceName()..":getShopStock")
+    TriggerServerEvent(GetCurrentResourceName()..":RefreshInStock")
     Citizen.Wait(100)
      
     for index, storeItem in ipairs(Config.SellItems[storeId]) do
          
         local itemFound = false
-
         if storeItem.category == category then
             local ctp = ""
             if storeItem.currencyType == "gold" then
@@ -105,18 +101,21 @@ function OpenSellMenu(storeId, category)
             if shopStocks[storeId] then
                 for k, items in pairs(shopStocks[storeId]) do
                     if items.itemName == storeItem.itemName and items.type == "sell" then
+                        if shopStocks[storeId].RandomPrices ~= nil then 
+                            if shopStocks[storeId].RandomPrices == true or shopStocks[storeId].RandomPrices == 1 then 
+                                storeItem.price = storeItem.randomprice
+                            end       
+                        end                   
                         itemFound = true
                         menuElements[elementIndex] = {
                             itemHeight = "2vh",
-                            label = "<span style=font-size:15px;text-align:center;>" ..
-                            items.amount .. "</span>".."<img style='max-height:45px;max-width:45px;float: left;text-align: center; margin-top: -5px;' src='nui://vorp_inventory/html/img/items/" ..
-                                storeItem.itemName .. ".png'><span style=margin-left:40px;font-size:25px;text-align:center;>" ..
-                                storeItem.itemLabel .. "</span>",
+                            label = "<span style=font-size:15px;text-align:center;> " ..items.amount .. " </span>"..
+                            "<span style=margin-left:40px;font-size:25px;text-align:center;> " ..storeItem.itemLabel.. " </span>",
                             value = "sell" .. tostring(elementIndex),
                             desc = "" ..
                                 '<span style="font-family: crock; src:nui://menuapi/html/fonts/crock.ttf) format("truetype")</span>' ..
                                 _U("sellfor") .. '<span style="margin-left:90px;">' .. '<span style="font-size:25px;">' .. ctp ..
-                                '</span>' .. '<span style="font-size:30px;">' .. string.format("%.2f", storeItem.sellprice) ..
+                                '</span>' .. '<span style="font-size:30px;">' .. string.format("%.2f", storeItem.price) ..
                                 "</span><span style='color: Yellow;'>  " .. storeItem.currencyType .. "</span><br><br><br>" ..
                                 storeItem.desc,
                             info = storeItem
@@ -128,16 +127,20 @@ function OpenSellMenu(storeId, category)
             end
             
             if not itemFound then
+                if shopStocks[storeId].RandomPrices ~= nil then 
+                    if shopStocks[storeId].RandomPrices == true or shopStocks[storeId].RandomPrices == 1 then 
+                        storeItem.price = storeItem.randomprice
+                    end       
+                end
                 menuElements[elementIndex] = {
                     itemHeight = "2vh",
-                    label = "<span style=font-size:15px;text-align:left;>∞</span>".."<img style='max-height:45px;max-width:45px;float: left;text-align: center; margin-top: -5px;' src='nui://vorp_inventory/html/img/items/" ..
-                        storeItem.itemName .. ".png'><span style=margin-left:40px;font-size:25px;text-align:center;>" ..
-                        storeItem.itemLabel .. "</span>",
+                    label = "<span style=font-size:15px;text-align:center;> n/a </span>".. 
+                    "<span style=margin-left:40px;font-size:25px;text-align:center;> " ..storeItem.itemLabel .. " </span>",
                     value = "sell" .. tostring(elementIndex),
                     desc = "" ..
                         '<span style="font-family: crock; src:nui://menuapi/html/fonts/crock.ttf) format("truetype")</span>' ..
                         _U("sellfor") .. '<span style="margin-left:90px;">' .. '<span style="font-size:25px;">' .. ctp ..
-                        '</span>' .. '<span style="font-size:30px;">' .. string.format("%.2f", storeItem.sellprice) ..
+                        '</span>' .. '<span style="font-size:30px;">' .. string.format("%.2f", storeItem.price) ..
                         "</span><span style='color: Yellow;'>  " .. storeItem.currencyType .. "</span><br><br><br>" ..
                         storeItem.desc,
                     info = storeItem
@@ -162,7 +165,7 @@ function OpenSellMenu(storeId, category)
             local ItemName = data.current.info.itemName
             local ItemLabel = data.current.info.itemLabel
             local currencyType = data.current.info.currencyType
-            local sellPrice = data.current.info.sellprice
+            local sellPrice = data.current.info.price
 
             local myInput = {
                 type = "enableinput", -- dont touch
@@ -229,18 +232,21 @@ function OpenBuyMenu(storeId, category)
             if shopStocks[storeId] then
                 for k, items in pairs(shopStocks[storeId]) do
                     if items.itemName == storeItem.itemName and items.type == "buy" then
+                        if shopStocks[storeId].RandomPrices ~= nil then 
+                            if shopStocks[storeId].RandomPrices == true or shopStocks[storeId].RandomPrices == 1 then 
+                                storeItem.price = storeItem.randomprice
+                            end       
+                        end                      
                         itemFound = true
                         menuElements[elementIndex] = {
                             itemHeight = "2vh",
-                            label = "<span style=font-size:15px;text-align:center;>" ..
-                            items.amount .. "</span>".." <img style='max-height: 40px;max-width: 40px;float: left;text-align: center;margin-top: -5px;' src='nui://vorp_inventory/html/img/items/" ..
-                                storeItem.itemName .. ".png'><span style=margin-left:40px;font-size:25px;text-align:center;>" ..
-                                storeItem.itemLabel .. "</span>",
+                            label = "<span style=font-size:15px;text-align:center;> " ..items.amount .. " </span>"..
+                            "<span style=margin-left:40px;font-size:25px;text-align:center;> " ..storeItem.itemLabel .. " </span>",
                             value = "sell" .. tostring(elementIndex),
                             desc = "" ..
                                 '<span style="font-family: crock; src:nui://menuapi/html/fonts/crock.ttf) format("truetype")</span>' ..
                                 _U("buyfor") .. '<span style="margin-left:90px;">' .. '<span style="font-size:25px;">' .. ctp ..
-                                '</span>' .. '<span style="font-size:30px;">' .. string.format("%.2f", storeItem.buyprice) ..
+                                '</span>' .. '<span style="font-size:30px;">' .. string.format("%.2f", storeItem.price) ..
                                 "</span><span style='color:Yellow;'>  " .. storeItem.currencyType .. "</span><br><br><br>" ..
                                 storeItem.desc,
                             info = storeItem            
@@ -251,16 +257,24 @@ function OpenBuyMenu(storeId, category)
             end
             
             if not itemFound then
+                if storeId ~= nil then   print("storeId",storeId) end 
+                if shopStocks ~= nil then   print("shopStocks",shopStocks,#shopStocks) end 
+                if shopStocks[storeId] ~= nil then print("shopStocks[storeId]",shopStocks[storeId]) end 
+                if shopStocks[storeId].RandomPrices ~= nil then print("shopStocks[storeId].RandomPrices",shopStocks[storeId].RandomPrices) end 
+                if shopStocks[storeId].RandomPrices ~= nil then 
+                    if shopStocks[storeId].RandomPrices == true or shopStocks[storeId].RandomPrices == 1 then 
+                        storeItem.price = storeItem.randomprice
+                    end       
+                end
                 menuElements[elementIndex] = {
                     itemHeight = "2vh",
-                    label = "<span style=font-size:15px;text-align:left;>∞</span>".. "<img style='max-height: 40px;max-width: 40px;float: left;text-align: center;margin-top: -5px;' src='nui://vorp_inventory/html/img/items/" ..
-                        storeItem.itemName .. ".png'><span style=margin-left:40px;font-size:25px;text-align:center;>" ..
-                        storeItem.itemLabel .. "</span>",
+                    label = "<span style=font-size:15px;text-align:center;> n/a </span>".. 
+                        "<span style=margin-left:40px;font-size:25px;text-align:center;> " ..storeItem.itemLabel .. " </span>",
                     value = "sell" .. tostring(elementIndex),
                     desc = "" ..
                         '<span style="font-family: crock; src:nui://menuapi/html/fonts/crock.ttf) format("truetype")</span>' ..
                         _U("buyfor") .. '<span style="margin-left:90px;">' .. '<span style="font-size:25px;">' .. ctp ..
-                        '</span>' .. '<span style="font-size:30px;">' .. string.format("%.2f", storeItem.buyprice) ..
+                        '</span>' .. '<span style="font-size:30px;">' .. string.format("%.2f", storeItem.price) ..
                         "</span><span style='color:Yellow;'>  " .. storeItem.currencyType .. "</span><br><br><br>" ..
                         storeItem.desc,
                     info = storeItem
@@ -286,7 +300,7 @@ function OpenBuyMenu(storeId, category)
             local ItemName = data.current.info.itemName
             local ItemLabel = data.current.info.itemLabel
             local currencyType = data.current.info.currencyType
-            local buyPrice = data.current.info.buyprice
+            local buyPrice = data.current.info.price
 
             local myInput = {
                 type = "enableinput", -- dont touch

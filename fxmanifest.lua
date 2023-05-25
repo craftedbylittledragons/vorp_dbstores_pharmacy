@@ -22,11 +22,10 @@ dependencies {
     'vorp_inventory', -- download from the vorp github
 } 
 
-
 --dont
 --touch
 
-version '1.6.1'
+version '1.6.2'
 vorp_checker 'yes'
 vorp_name '^4Resource version Check^3'
 vorp_github 'https://github.com/craftedbylittledragons/vorp_stores_blacksmith'

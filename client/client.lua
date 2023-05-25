@@ -86,7 +86,7 @@ Citizen.CreateThread(function()
                         if not Config.Stores[storeId].NPC and storeConfig.NpcAllowed then
                             SpawnNPC(storeId) 
                         end   
-                        -- ## run this before distance check  no need to run a code that is no meant for the client ## --
+                        -- ## run this before distance check no need to run a code that is no meant for the client ## --
                         if not next(storeConfig.AllowedJobs) then -- if jobs empty then everyone can use
                             local coordsDist = vector3(coords.x, coords.y, coords.z)
                             local coordsStore = vector3(storeConfig.x, storeConfig.y, storeConfig.z)
@@ -189,3 +189,10 @@ Citizen.CreateThread(function()
         end
     end
 end)
+
+
+ 
+Citizen.CreateThread(function()	        
+	Citizen.Wait(10000) 
+	TriggerServerEvent(Config.ScriptName..":SendReady")	        
+end) 
